@@ -5,6 +5,11 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+// Grayscale coefficients to transform pixels to grayscale versions
+#define GSCALE_R_COEFF	0.2126
+#define GSCALE_G_COEFF	0.7152
+#define GSCALE_B_COEFF	0.0722
+
 struct pixel {
     uint8_t r;
     uint8_t g;
