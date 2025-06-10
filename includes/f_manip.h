@@ -13,9 +13,16 @@
 
 #define BASE_10		10
 
-/** \fn int ft_read(char* pathname)
+/** \fn int f_read(char* pathname)
  *
  * Read a file.
  */
 struct pixel** f_read(char* pathname, int* height, int* width);
+
+/** \fn int f_write(char* pathname, const int height, const int width)
+ *
+ * Write a struct pixel** 2D array into a P6 formatted .ppm file.
+ * Return 1 on success, 0 otherwise.
+ */
+int f_write(char* pathname, struct pixel** arr, const int height, const int width);
 #endif

@@ -1,6 +1,5 @@
 #include "../includes/f_manip.h"
-#include "pixel.h"
-#include <stdio.h>
+#include "../includes/pixel.h"
 
 struct pixel** f_read(char* pathname, int* height, int* width) {
 
@@ -80,8 +79,15 @@ struct pixel** f_read(char* pathname, int* height, int* width) {
     }
 
     // Read RGB color for every pixel in image and store in v1_plate
-    // TODO
+    for (int i = 0; i < h; i++) {
+	for (int j = 0; j < w; j++) {
+	    fread(&(v1_plate[i][j].r), 1, 1, f);
+	    fread(&(v1_plate[i][j].g), 1, 1, f);
+	    fread(&(v1_plate[i][j].b), 1, 1, f);
+	}
+    }
 
+    // Processing done, close the file
     fclose(f);
 
     // Set parameters to image size values
@@ -89,4 +95,25 @@ struct pixel** f_read(char* pathname, int* height, int* width) {
     *width = w;
 
     return v1_plate;
+}
+
+int f_write(char* pathname, struct pixel** arr, const int height, const int width) {
+    FILE* f = fopen(pathname, "wb");
+    if (!f) {
+	perror("Failed to open file for writing: %s");
+	return 0;
+    }
+
+    // Write the PPM header
+    fprintf(f, "P6\n%d %d\n255\n", width, height);
+
+    // Write the binary pixel data
+    for (int i = 0; i < height; ++i) {
+	for (int j = 0; j < width; ++j) {
+	    fwrite(&arr[i][j], sizeof(struct pixel), 1, f);
+	}
+    }
+
+    fclose(f);
+    return 1;
 }
