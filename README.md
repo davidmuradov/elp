@@ -8,6 +8,8 @@ which we can do image manipulation and processing.
 
 
 (DONE) Write Grayscale conversion function.
+![Grayscale image](./screenshots/plgray.png)
 
 
 (DONE) Write gaussian 3x3 blurring.
+![Gaussian blurred image](./screenshots/plgauss.png)
