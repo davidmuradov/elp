@@ -3,12 +3,13 @@
 #include <stdio.h>
 
 /**
- * Compute convoluted pixels for a 3x3 gaussian blur
+ * Compute convoluted pixel for a given kernel. Optionnaly send a constant.
  * Operations here should be verified as valid in the functions that
  * call this one.
  */
 static inline uint8_t
-compute_gauss3_conv_px(struct pixel** plate, const int i, const int j, const int kern[3][3]);
+compute_gen_conv_px(struct pixel** plate, const int i, const int j,
+	const int kern[3][3], const double factor);
 
 struct pixel**
 new_px_array(const int h, const int w) {
@@ -79,11 +80,11 @@ gaussian_blur_3(struct pixel** plate, const int h, const int w) {
 	new_plate[h - 1][j] = plate[h - 1][j];
     }
 
-    // Calculate all convoluted pixels, store in b_plate
+    // Calculate all convoluted pixels, store in new_plate
     uint8_t conv_px = 0;
     for (int i = 1; i < h - 1; i++) {
 	for (int j = 1; j < w - 1; j++) {
-	    conv_px = compute_gauss3_conv_px(plate, i, j, GB_3_INT_KER);
+	    conv_px = compute_gen_conv_px(plate, i, j, GB_3_INT_KER, GB3_FACTOR);
 	    new_plate[i][j].r = new_plate[i][j].g = new_plate[i][j].b = conv_px;
 	}
     }
@@ -92,14 +93,15 @@ gaussian_blur_3(struct pixel** plate, const int h, const int w) {
 }
 
 static inline uint8_t
-compute_gauss3_conv_px(struct pixel** plate, int i, int j, const int kern[3][3]) {
-    double conv_px_d = (GB3_FACTOR) *
-	(plate[i - 1][j - 1].r * kern[0][0] + plate[i - 1][j].r * kern[0][1]
-	 + plate[i - 1][j + 1].r * kern[0][2] +
-	 plate[i][j - 1].r * kern[1][0] + plate[i][j].r * kern[1][1] +
-	 plate[i][j + 1].r * kern[1][2] +
-	 plate[i + 1][j - 1].r * kern[2][0] + plate[i + 1][j].r * kern[2][1] +
-	 plate[i + 1][j + 1].r * kern[2][2]);
+compute_gen_conv_px(struct pixel** plate, int i, int j,
+	const int kern[3][3], const double factor) {
+    double conv_px_d = factor *
+	(plate[i - 1][j - 1].r * kern[2][2] + plate[i - 1][j].r * kern[2][1]
+	 + plate[i - 1][j + 1].r * kern[2][0] +
+	 plate[i][j - 1].r * kern[1][2] + plate[i][j].r * kern[1][1] +
+	 plate[i][j + 1].r * kern[1][0] +
+	 plate[i + 1][j - 1].r * kern[0][2] + plate[i + 1][j].r * kern[0][1] +
+	 plate[i + 1][j + 1].r * kern[0][0]);
 
     return ((uint8_t) round(conv_px_d));
 }
