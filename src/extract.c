@@ -20,8 +20,18 @@ extract_plate(struct pixel** plate, const int h, const int w) {
     }
     f_write("screenshots/plgauss.ppm", gauss_plate, h, w);
 
+    // Use Sobel operator on image
+    struct pixel** sobel_plate = sobel(gauss_plate, h, w);
+    if(!sobel_plate) {
+	free_px_array(plate, h);
+	free_px_array(gauss_plate, h);
+	exit(EXIT_FAILURE);
+    }
+    f_write("screenshots/plsobel.ppm", sobel_plate, h, w);
+
     free_px_array(plate, h);
     free_px_array(gauss_plate, h);
+    free_px_array(sobel_plate, h);
 
     return "returned";
 }

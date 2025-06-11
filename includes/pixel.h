@@ -15,6 +15,9 @@
 // Gaussian integer blur factor
 #define GB3_FACTOR	(1./16)
 
+// Sobel operator smoothing factor
+#define SOBEL_FACTOR	(1./4)
+
 struct pixel {
     uint8_t r;
     uint8_t g;
@@ -48,5 +51,13 @@ grayscale_px(struct pixel* px);
  */
 struct pixel**
 gaussian_blur_3(struct pixel** plate, const int h, const int w);
+
+/**
+ * Applies the sobel operator to an image. Outer edge pixels are ignored.
+ * Returns a new struct pixel** which is the sobel variant of the image received
+ * as parameter
+ */
+struct pixel**
+sobel(struct pixel** plate, const int h, const int w);
 
 #endif
