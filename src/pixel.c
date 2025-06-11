@@ -8,7 +8,7 @@
  * call this one.
  */
 static inline uint8_t
-compute_gauss3_conv_px(struct pixel** plate, int i, int j, const int kern[3][3]);
+compute_gauss3_conv_px(struct pixel** plate, const int i, const int j, const int kern[3][3]);
 
 struct pixel**
 new_px_array(const int h, const int w) {
@@ -59,11 +59,15 @@ grayscale_px(struct pixel* px) {
     px->r = px->g = px->b = (uint8_t) round(y);
 }
 
-void
-gaussian_blur_3(struct pixel** plate, struct pixel** new_plate,
-	const int h, const int w) {
+struct pixel**
+gaussian_blur_3(struct pixel** plate, const int h, const int w) {
     // Gaussian integer convolution kernel
     const int GB_3_INT_KER[3][3] = {{1,2,1}, {2,4,2}, {1,2,1}};
+
+    // Create new image
+    struct pixel** new_plate = new_px_array(h, w);
+    if(!new_plate)
+	return NULL;
 
     // Copy the border pixels
     for (int i = 0; i < h; i++) {
@@ -84,10 +88,7 @@ gaussian_blur_3(struct pixel** plate, struct pixel** new_plate,
 	}
     }
 
-    // Deallocate original plate, move address to gaussian blurred version
-    // UPDATE: actually should just create a new block of memory and free
-    // the original plate
-    free_px_array(plate, h);
+    return new_plate;
 }
 
 static inline uint8_t
