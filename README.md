@@ -6,4 +6,4 @@ A tool to extract a licence plate number from an image.
 which we can do image manipulation and processing.
 
 
-(IN PROGRESS) Write convolution kernels to do image processing.
+(DONE) Write gaussian 3x3 blurring.
