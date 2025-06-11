@@ -43,11 +43,12 @@ grayscale_px(struct pixel* px);
 
 /**
  * Applies a 3x3 gaussian blur to an image. In this version, the outer edge
- * of the picture will not be modified. The original image gets replaced by
- * the blurred variant. The memory of the old image gets deallocated. If memory
- * cannot be allocated for the new image, the original is preserved.
+ * of the picture will not be modified. The original image gets deallocated
+ * and the new version of the image is stored in the new_plate. If allocation
+ * fails, nothing happens.
  */
 void
-gaussian_blur_3(struct pixel** plate, const int h, const int w);
+gaussian_blur_3(struct pixel** plate, struct pixel** new_plate,
+	const int h, const int w);
 
 #endif

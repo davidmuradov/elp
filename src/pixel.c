@@ -60,36 +60,34 @@ grayscale_px(struct pixel* px) {
 }
 
 void
-gaussian_blur_3(struct pixel** plate, const int h, const int w) {
+gaussian_blur_3(struct pixel** plate, struct pixel** new_plate,
+	const int h, const int w) {
     // Gaussian integer convolution kernel
     const int GB_3_INT_KER[3][3] = {{1,2,1}, {2,4,2}, {1,2,1}};
 
-    // Create the new blurred image
-    struct pixel** b_plate = new_px_array(h, w);
-    if(b_plate) {
-	// Copy the border pixels
-	for (int i = 0; i < h; i++) {
-	    b_plate[i][0] = plate[i][0];
-	    b_plate[i][w - 1] = plate[i][w - 1];
-	}
-	for (int j = 1; j < w - 1; j++) {
-	    b_plate[0][j] = plate[0][j];
-	    b_plate[h - 1][j] = plate[h - 1][j];
-	}
-
-	// Calculate all convoluted pixels, store in b_plate
-	uint8_t conv_px = 0;
-	for (int i = 1; i < h - 1; i++) {
-	    for (int j = 1; j < w - 1; j++) {
-		conv_px = compute_gauss3_conv_px(plate, i, j, GB_3_INT_KER);
-		b_plate[i][j].r = b_plate[i][j].g = b_plate[i][j].b = conv_px;
-	    }
-	}
-
-	// Deallocate original plate, move address to gaussian blurred version
-	free_px_array(plate, h);
-	plate = b_plate;
+    // Copy the border pixels
+    for (int i = 0; i < h; i++) {
+	new_plate[i][0] = plate[i][0];
+	new_plate[i][w - 1] = plate[i][w - 1];
     }
+    for (int j = 1; j < w - 1; j++) {
+	new_plate[0][j] = plate[0][j];
+	new_plate[h - 1][j] = plate[h - 1][j];
+    }
+
+    // Calculate all convoluted pixels, store in b_plate
+    uint8_t conv_px = 0;
+    for (int i = 1; i < h - 1; i++) {
+	for (int j = 1; j < w - 1; j++) {
+	    conv_px = compute_gauss3_conv_px(plate, i, j, GB_3_INT_KER);
+	    new_plate[i][j].r = new_plate[i][j].g = new_plate[i][j].b = conv_px;
+	}
+    }
+
+    // Deallocate original plate, move address to gaussian blurred version
+    // UPDATE: actually should just create a new block of memory and free
+    // the original plate
+    free_px_array(plate, h);
 }
 
 static inline uint8_t
