@@ -1,4 +1,5 @@
 #include "../includes/extract.h"
+#include "pixel.h"
 
 char*
 extract_plate(struct pixel** plate, const int h, const int w) {
@@ -12,8 +13,11 @@ extract_plate(struct pixel** plate, const int h, const int w) {
     f_write("plgray.ppm", plate, h, w);
 
     // Use gaussian blur on image
-    gaussian_blur_3(plate, h, w);
-    f_write("plgauss.ppm", plate, h, w);
+    struct pixel** gauss_plate = new_px_array(h, w);
+    gaussian_blur_3(plate, gauss_plate, h, w);
+    f_write("plgauss.ppm", gauss_plate, h, w);
+
+    free_px_array(gauss_plate, h);
 
     return "returned";
 }

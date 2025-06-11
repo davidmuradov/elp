@@ -37,8 +37,6 @@ int main(int argc, char *argv[]) {
 
     extract_plate(v1_plate, v1_plate_h, v1_plate_w);
 
-    //free_px_array(&v1_plate, v1_plate_h);
-
     return EXIT_SUCCESS;
 }
 
