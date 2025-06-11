@@ -131,6 +131,24 @@ sobel(struct pixel** plate, const int h, const int w) {
     return new_plate;
 }
 
+struct pixel**
+threshold(struct pixel** plate, const int h, const int w) {
+    // Create new image
+    struct pixel** new_plate = new_px_array(h, w);
+    if(!new_plate)
+	return NULL;
+
+    // Simple thresholding
+    for (int i = 0; i < h; i++) {
+	for (int j = 0; j < w; j++) {
+	    new_plate[i][j].r = new_plate[i][j].g = new_plate[i][j].b
+		= (plate[i][j].r < THRESH_S) ? (0x00):(0xFF);
+	}
+    }
+
+    return new_plate;
+}
+
 static inline int
 compute_gen_conv_px(struct pixel** plate, int i, int j,
 	const int kern[3][3], const double factor) {

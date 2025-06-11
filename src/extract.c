@@ -29,9 +29,20 @@ extract_plate(struct pixel** plate, const int h, const int w) {
     }
     f_write("screenshots/plsobel.ppm", sobel_plate, h, w);
 
+    // Use simple thresholding
+    struct pixel** t_plate = threshold(gauss_plate, h, w);
+    if(!t_plate) {
+	free_px_array(plate, h);
+	free_px_array(gauss_plate, h);
+	free_px_array(sobel_plate, h);
+	exit(EXIT_FAILURE);
+    }
+    f_write("screenshots/plthreshold.ppm", t_plate, h, w);
+
     free_px_array(plate, h);
     free_px_array(gauss_plate, h);
     free_px_array(sobel_plate, h);
+    free_px_array(t_plate, h);
 
     return "returned";
 }

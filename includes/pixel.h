@@ -18,6 +18,8 @@
 // Sobel operator smoothing factor
 #define SOBEL_FACTOR	(1./4)
 
+#define THRESH_S	(0x80)
+
 struct pixel {
     uint8_t r;
     uint8_t g;
@@ -59,5 +61,12 @@ gaussian_blur_3(struct pixel** plate, const int h, const int w);
  */
 struct pixel**
 sobel(struct pixel** plate, const int h, const int w);
+
+/**
+ * Applies a constant threshold for binerization. Dark colors turn pure black
+ * and light colors turn pure white.
+ */
+struct pixel**
+threshold(struct pixel** plate, const int h, const int w);
 
 #endif
