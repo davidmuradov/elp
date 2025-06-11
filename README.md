@@ -13,3 +13,7 @@ which we can do image manipulation and processing.
 
 (DONE) Write gaussian 3x3 blurring.
 ![Gaussian blurred image](./screenshots/plgauss.png)
+
+
+(DONE) Write Sobel operator.
+![Gaussian blurred image](./screenshots/plsobel.png)
