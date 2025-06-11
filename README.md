@@ -17,3 +17,7 @@ which we can do image manipulation and processing.
 
 (DONE) Write Sobel operator.
 ![Gaussian blurred image](./screenshots/plsobel.png)
+
+
+(DONE) Write simple binary threshold.
+![Simple threshold](./screenshots/plthreshold.png)
