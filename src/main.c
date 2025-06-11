@@ -2,8 +2,7 @@
 #include <getopt.h>
 #include <stdio.h>
 
-#include "../includes/f_manip.h"
-#include "pixel.h"
+#include "../includes/extract.h"
 
 #define OPTIONS_LIST	"h?"
 
@@ -36,9 +35,9 @@ int main(int argc, char *argv[]) {
 	exit(EXIT_FAILURE);
     }
 
-    f_write("pl.ppm", v1_plate, v1_plate_h, v1_plate_w);
+    extract_plate(v1_plate, v1_plate_h, v1_plate_w);
 
-    free_px_array(v1_plate, v1_plate_h);
+    //free_px_array(&v1_plate, v1_plate_h);
 
     return EXIT_SUCCESS;
 }

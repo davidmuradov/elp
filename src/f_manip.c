@@ -36,35 +36,7 @@ struct pixel** f_read(char* pathname, int* height, int* width) {
 
     // Allocate memory for 2D array converted picture
     // array would be of form IMAGE[height][width]
-    struct pixel** v1_plate = (struct pixel**)
-	malloc((unsigned long) h * sizeof(struct pixel*));
-    if(!v1_plate) {
-	fprintf(stderr, "Error while allocating memory for '%s'\n", pathname);
-	fclose(f);
-	return NULL;
-    }
-
-    // Allocate for every line
-    for (int i = 0; i < h; i++) {
-	v1_plate[i] = (struct pixel*)
-	    malloc((unsigned long) w * sizeof(struct pixel));
-	if(!v1_plate[i]) {
-	    fprintf(stderr, "Error while allocating memory for '%s'\n", pathname);
-	    fclose(f);
-
-	    // Free every line before the failed allocation, free the parent
-	    // as well
-	    for (int j = i - 1; j > -1; j--) {
-		free(v1_plate[j]);
-		v1_plate[j] = NULL;
-	    }
-
-	    free(v1_plate);
-	    v1_plate = NULL;
-
-	    return NULL;
-	}
-    }
+    struct pixel** v1_plate = new_px_array(h, w);
 
     // Verify max color value (we want 255 for now,
     // but we could change that later)

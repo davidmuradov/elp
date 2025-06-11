@@ -3,10 +3,7 @@ INCLUDES_PATH = includes
 SRC_PATH = src
 
 main: $(SRC_PATH)/*.c $(INCLUDES_PATH)/*.h
-	clang $(CFLAGS) -o bin/elp -I $(INCLUDES_PATH) $(SRC_PATH)/*.c
-
-obj/f_manip.o: src/f_manip.c includes/f_manip.h
-	clang $(CFLAGS) $(INCLUDES) src/f_manip.c -o obj/f_manip.o
+	clang $(CFLAGS) -o bin/elp -I $(INCLUDES_PATH) -lm $(SRC_PATH)/*.c
 
 PHONY: clean
 clean:
