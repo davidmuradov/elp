@@ -69,4 +69,12 @@ sobel(struct pixel** plate, const int h, const int w);
 struct pixel**
 threshold(struct pixel** plate, const int h, const int w);
 
+/**
+ * Applies morphological dilation on a binary image. The function attempts to
+ * dilate dark pixels based on the size of the structuring element
+ * (the dilation kernel). Returns a dilated image.
+ */
+struct pixel**
+morph_dilate(struct pixel** plate, const int h, const int w);
+
 #endif
