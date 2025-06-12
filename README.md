@@ -21,3 +21,6 @@ which we can do image manipulation and processing.
 
 (DONE) Write simple binary threshold.
 ![Simple threshold](./screenshots/plthreshold.png)
+
+(DONE) Write simple morphological dilation.
+![Simple threshold](./screenshots/pldilation.png)
