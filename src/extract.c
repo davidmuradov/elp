@@ -40,7 +40,7 @@ extract_plate(struct pixel** plate, const int h, const int w) {
     f_write("screenshots/plthreshold.ppm", t_plate, h, w);
 
     // Use dilation
-    struct pixel** d_plate = morph_dilate(t_plate, h, w);
+    struct pixel** d_plate = morph_dilation(t_plate, h, w);
     if(!d_plate) {
 	free_px_array(plate, h);
 	free_px_array(gauss_plate, h);
@@ -50,11 +50,26 @@ extract_plate(struct pixel** plate, const int h, const int w) {
     }
     f_write("screenshots/pldilate.ppm", d_plate, h, w);
 
+    // Use erosion
+    struct pixel** e_plate = morph_erosion(d_plate, h, w);
+    if(!e_plate) {
+	free_px_array(plate, h);
+	free_px_array(gauss_plate, h);
+	free_px_array(sobel_plate, h);
+	free_px_array(t_plate, h);
+	free_px_array(d_plate, h);
+	exit(EXIT_FAILURE);
+    }
+    f_write("screenshots/plerode.ppm", e_plate, h, w);
+
+    // At this point, plate is morphologicaly closed
+
     free_px_array(plate, h);
     free_px_array(gauss_plate, h);
     free_px_array(sobel_plate, h);
     free_px_array(t_plate, h);
     free_px_array(d_plate, h);
+    free_px_array(e_plate, h);
 
     return "returned";
 }
