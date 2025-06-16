@@ -56,3 +56,4 @@ bin/*
 compile_commands.json
 .cache/
 *.ppm
+.ignore
