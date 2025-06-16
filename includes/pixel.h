@@ -75,6 +75,14 @@ threshold(struct pixel** plate, const int h, const int w);
  * (the dilation kernel). Returns a dilated image.
  */
 struct pixel**
-morph_dilate(struct pixel** plate, const int h, const int w);
+morph_dilation(struct pixel** plate, const int h, const int w);
+
+/**
+ * Applies morphological erosion on a binary image. The function attempts to
+ * erode dark pixels based on the size of the structuring element
+ * (the erosion kernel). Returns an eroded image.
+ */
+struct pixel**
+morph_erosion(struct pixel** plate, const int h, const int w);
 
 #endif

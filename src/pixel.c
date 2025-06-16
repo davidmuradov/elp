@@ -21,6 +21,14 @@ compute_gen_conv_px(struct pixel** plate, const int i, const int j,
 static inline uint8_t
 dilates(struct pixel** plate, const int i, const int j);
 
+/**
+ * Determines if a pixel should be eroded. Scan for white pixels in a box of
+ * size d_sz x d_sz. Maybe at some point we could choose a shape for the 
+ * structuring element. Returns 0xFF if pixel should turn dark, 0x00 otherwise.
+ */
+static inline uint8_t
+erodes(struct pixel** plate, const int i, const int j);
+
 struct pixel**
 new_px_array(const int h, const int w) {
     struct pixel** arr = (struct pixel**)
@@ -158,7 +166,7 @@ threshold(struct pixel** plate, const int h, const int w) {
 }
 
 struct pixel**
-morph_dilate(struct pixel** plate, const int h, const int w) {
+morph_dilation(struct pixel** plate, const int h, const int w) {
     // Create new image
     struct pixel** new_plate = new_px_array(h, w);
     if(!new_plate)
@@ -181,6 +189,40 @@ morph_dilate(struct pixel** plate, const int h, const int w) {
 		new_plate[i][j].r = new_plate[i][j].g = new_plate[i][j].b
 		    = dilates(plate, i, j);
 	    }
+	    else
+		new_plate[i][j].r = new_plate[i][j].g = new_plate[i][j].b = plate[i][j].r;
+	}
+    }
+
+    return new_plate;
+}
+
+struct pixel**
+morph_erosion(struct pixel** plate, const int h, const int w) {
+    // Create new image
+    struct pixel** new_plate = new_px_array(h, w);
+    if(!new_plate)
+	return NULL;
+
+    // Copy the border pixels
+    for (int i = 0; i < h; i++) {
+	new_plate[i][0] = plate[i][0];
+	new_plate[i][w - 1] = plate[i][w - 1];
+    }
+    for (int j = 1; j < w - 1; j++) {
+	new_plate[0][j] = plate[0][j];
+	new_plate[h - 1][j] = plate[h - 1][j];
+    }
+
+    // Erosion
+    for (int i = 1; i < h - 1; i++) {
+	for (int j = 1; j < w - 1; j++) {
+	    if(!plate[i][j].r) {
+		new_plate[i][j].r = new_plate[i][j].g = new_plate[i][j].b
+		    = erodes(plate, i, j);
+	    }
+	    else
+		new_plate[i][j].r = new_plate[i][j].g = new_plate[i][j].b = plate[i][j].r;
 	}
     }
 
@@ -198,7 +240,7 @@ compute_gen_conv_px(struct pixel** plate, int i, int j,
 	 plate[i + 1][j - 1].r * kern[0][2] + plate[i + 1][j].r * kern[0][1] +
 	 plate[i + 1][j + 1].r * kern[0][0]);
 
-    return ((int) round(conv_px_d));
+    return (int) conv_px_d;
 }
 
 static inline uint8_t
@@ -211,4 +253,16 @@ dilates(struct pixel** plate, const int i, const int j) {
     }
 
     return 0xFF;
+}
+
+static inline uint8_t
+erodes(struct pixel** plate, const int i, const int j) {
+    for (int k = i - 1; k < i + 2; k++) {
+	for (int l = j - 1; l < j + 2; l++) {
+	    if(plate[k][l].r)
+		return 0xFF;
+	}
+    }
+
+    return 0x00;
 }
