@@ -56,4 +56,6 @@ bin/*
 compile_commands.json
 .cache/
 *.ppm
+screenshots/*.ppm
+screenshots/plgauss.ppm
 .ignore
