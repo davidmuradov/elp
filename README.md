@@ -31,10 +31,15 @@ which we can do image manipulation and processing.
 ![Simple dilation](./screenshots/plerode.png)
 
 
-(DONE) Isolate plate number vertically
+(DONE) Isolate plate number
 ![Simple isolation](./screenshots/plisolate.png)
 
 Next steps :
 
 - Code needs to be refactored a bit in order to facilitate progress and to
 avoid memory allocation bugs.
+
+- At this point, the output image is processed well enough to be reliably used
+in a OCR library (like tesseract for example) in order to extract the plate
+number. For this project, a library will not be used for OCR as this step is
+part of the learning process.
