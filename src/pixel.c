@@ -3,6 +3,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 /**
  * Compute convoluted pixel for a given kernel. Optionnaly send a constant.
@@ -232,8 +233,8 @@ morph_erosion(struct pixel** plate, const int h, const int w) {
 struct pixel**
 isolate_number(struct pixel** plate, int* h, int* w) {
 
-    int xtbp; // Total black pixels on x axis per line
-    int vbuf = 5; // 5 pixels of buffer
+    int tbp; // Total black pixels on x axis per line
+    int px_buf = 5; // 5 pixels of buffer
     double h_rat = 0;
     double w_rat = 0;
     
@@ -244,34 +245,33 @@ isolate_number(struct pixel** plate, int* h, int* w) {
     int max_w = 0;
 
     for (int i = 0; i < *h; i++) {
-	xtbp = 0;
+	tbp = 0;
 	for (int j = 0; j < *w; j++) {
 	    if(!plate[i][j].r)
-		xtbp++;
+		tbp++;
 	}
 
 	h_rat = ((double) i) / *h;
-	w_rat = ((double) xtbp) / *w;
+	w_rat = ((double) tbp) / *w;
 	// 0.3221 for letters ratio, 0.22135 for height ratio
 	if(w_rat > 0.3211 && (h_rat > 0.22135 && h_rat < 0.2864)) {
-	    min_h = i - vbuf;
+	    min_h = i - px_buf;
 	    i = (int) (0.664 * *h);
 	}
 	// 0.035248 for letters ratio, 0.359 for height ratio
 	else if(w_rat < 0.035248 && h_rat > 0.359) {
-	    max_h = i + vbuf;
+	    max_h = i + px_buf;
 	    break;
 	}
     }
-    printf("%d %d\n", min_h, max_h);
 
     // Create new image
-    printf("%d\n", max_h - min_h + 1);
     int new_h = max_h - min_h + 1;
     struct pixel** new_plate = new_px_array(new_h, *w);
     *h = new_h;
     if(!new_plate)
 	return NULL;
+
     // Copy the pixels
     for (int i = min_h; i < max_h + 1; i++) {
 	for (int j = 0; j < *w; j++) {
@@ -279,7 +279,47 @@ isolate_number(struct pixel** plate, int* h, int* w) {
 	}
     }
 
-    return new_plate;
+    // Using the new image to isolate the plate horizontally
+    double v_rat = 0;
+    double d_rat = 0;
+    for (int j = 0; j < *w; j++) {
+	tbp = 0;
+	for (int i = 0; i < *h; i++) {
+	    if(!new_plate[i][j].r)
+		tbp++;
+	}
+
+	v_rat = ((double) tbp) / *h;
+	d_rat = ((double) j) / *w;
+	if(v_rat > 0.03 && (d_rat > 0.03911 && d_rat < 0.13038)) {
+	    min_w = j - px_buf;
+	    j = (int) (0.855 * *w);
+	}
+	// 0.035248 for letters ratio, 0.359 for height ratio
+	else if(v_rat < 0.03 && d_rat > 0.88657) {
+	    max_w = j + px_buf;
+	    break;
+	}
+    }
+
+    // Create new image
+    int new_w = max_w - min_w + 1;
+    struct pixel** newest_plate = new_px_array(*h, new_w);
+    *w = new_w;
+    if(!new_plate)
+	return NULL;
+
+    // Copy the pixels
+    for (int j = min_w; j < max_w + 1; j++) {
+	for (int i = 0; i < *h; i++) {
+	    newest_plate[i][j - min_w] = new_plate[i][j];
+	}
+    }
+
+    // Free inter. plate
+    free_px_array(new_plate, *h);
+
+    return newest_plate;
 }
 
 static inline int
