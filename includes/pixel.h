@@ -85,4 +85,12 @@ morph_dilation(struct pixel** plate, const int h, const int w);
 struct pixel**
 morph_erosion(struct pixel** plate, const int h, const int w);
 
+/**
+ * Isolates the plate number for Optical Character Recognition (OCR). This is
+ * a very basic implementation, will probably need to be updated in the future
+ * for reliability. Returns a struct pixel** containing the isolated number.
+ */
+struct pixel**
+isolate_number(struct pixel** plate, int* h, int* w);
+
 #endif

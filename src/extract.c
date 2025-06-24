@@ -2,7 +2,7 @@
 #include "pixel.h"
 
 char*
-extract_plate(struct pixel** plate, const int h, const int w) {
+extract_plate(struct pixel** plate, int h, int w) {
 
     // Turn image to grayscale version
     for (int i = 0; i < h; i++) {
@@ -63,6 +63,18 @@ extract_plate(struct pixel** plate, const int h, const int w) {
     f_write("screenshots/plerode.ppm", e_plate, h, w);
 
     // At this point, plate is morphologicaly closed
+    // Isolate the plate vertically and horizontally (very basic version)
+    struct pixel** iso_plate = isolate_number(e_plate, &h, &w);
+    if(!iso_plate) {
+	free_px_array(plate, h);
+	free_px_array(gauss_plate, h);
+	free_px_array(sobel_plate, h);
+	free_px_array(t_plate, h);
+	free_px_array(d_plate, h);
+	free_px_array(e_plate, h);
+	exit(EXIT_FAILURE);
+    }
+    f_write("screenshots/plisolate.ppm", iso_plate, h, w);
 
     free_px_array(plate, h);
     free_px_array(gauss_plate, h);
@@ -70,6 +82,7 @@ extract_plate(struct pixel** plate, const int h, const int w) {
     free_px_array(t_plate, h);
     free_px_array(d_plate, h);
     free_px_array(e_plate, h);
+    free_px_array(iso_plate, h);
 
     return "returned";
 }

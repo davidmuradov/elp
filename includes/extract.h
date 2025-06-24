@@ -9,6 +9,6 @@
  * Main function. Extract the plate number and return it as string.
  */
 char*
-extract_plate(struct pixel** plate, const int h, const int w);
+extract_plate(struct pixel** plate, int h, int w);
 
 #endif

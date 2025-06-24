@@ -229,6 +229,59 @@ morph_erosion(struct pixel** plate, const int h, const int w) {
     return new_plate;
 }
 
+struct pixel**
+isolate_number(struct pixel** plate, int* h, int* w) {
+
+    int xtbp; // Total black pixels on x axis per line
+    int vbuf = 5; // 5 pixels of buffer
+    double h_rat = 0;
+    double w_rat = 0;
+    
+    // Dimensions for the new plate
+    int min_h = 0;
+    int max_h = 0;
+    int min_w = 0;
+    int max_w = 0;
+
+    for (int i = 0; i < *h; i++) {
+	xtbp = 0;
+	for (int j = 0; j < *w; j++) {
+	    if(!plate[i][j].r)
+		xtbp++;
+	}
+
+	h_rat = ((double) i) / *h;
+	w_rat = ((double) xtbp) / *w;
+	// 0.3221 for letters ratio, 0.22135 for height ratio
+	if(w_rat > 0.3211 && (h_rat > 0.22135 && h_rat < 0.2864)) {
+	    min_h = i - vbuf;
+	    i = (int) (0.664 * *h);
+	}
+	// 0.035248 for letters ratio, 0.359 for height ratio
+	else if(w_rat < 0.035248 && h_rat > 0.359) {
+	    max_h = i + vbuf;
+	    break;
+	}
+    }
+    printf("%d %d\n", min_h, max_h);
+
+    // Create new image
+    printf("%d\n", max_h - min_h + 1);
+    int new_h = max_h - min_h + 1;
+    struct pixel** new_plate = new_px_array(new_h, *w);
+    *h = new_h;
+    if(!new_plate)
+	return NULL;
+    // Copy the pixels
+    for (int i = min_h; i < max_h; i++) {
+	for (int j = 0; j < *w; j++) {
+	    new_plate[i - min_h][j] = plate[i][j];
+	}
+    }
+
+    return new_plate;
+}
+
 static inline int
 compute_gen_conv_px(struct pixel** plate, int i, int j,
 	const int kern[3][3], const double factor) {
