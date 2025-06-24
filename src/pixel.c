@@ -273,7 +273,7 @@ isolate_number(struct pixel** plate, int* h, int* w) {
     if(!new_plate)
 	return NULL;
     // Copy the pixels
-    for (int i = min_h; i < max_h; i++) {
+    for (int i = min_h; i < max_h + 1; i++) {
 	for (int j = 0; j < *w; j++) {
 	    new_plate[i - min_h][j] = plate[i][j];
 	}
