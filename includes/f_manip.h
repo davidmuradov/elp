@@ -17,7 +17,7 @@
  *
  * Read a file.
  */
-struct pixel** f_read(char* pathname, int* height, int* width);
+void f_read(char* pathname, struct t_image* image);
 
 /** \fn int f_write(char* pathname, const int height, const int width)
  *

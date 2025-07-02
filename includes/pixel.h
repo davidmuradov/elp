@@ -26,6 +26,12 @@ struct pixel {
     uint8_t b;
 };
 
+struct t_image {
+    int h;
+    int w;
+    struct pixel** im;
+};
+
 /**
  * Create a new 2D array of pixels. The color values are random, so this array
  * should be initialized later in the program.
