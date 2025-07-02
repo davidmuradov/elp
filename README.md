@@ -43,3 +43,5 @@ avoid memory allocation bugs.
 in a OCR library (like tesseract for example) in order to extract the plate
 number. For this project, a library will not be used for OCR as this step is
 part of the learning process.
+
+-- Small test
