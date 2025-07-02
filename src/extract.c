@@ -8,15 +8,12 @@ extract_plate(struct t_image* image) {
     grayscale_filter(image);
     f_write("screenshots/plgray.ppm", image);
 
-    /*
     // Use gaussian blur on image
-    struct pixel** gauss_plate = gaussian_blur_3(plate, h, w);
-    if(!gauss_plate) {
-	free_px_array(plate, h);
-	exit(EXIT_FAILURE);
-    }
-    f_write("screenshots/plgauss.ppm", gauss_plate, h, w);
+    struct t_image gauss_image;
+    gaussian_blur3_filter(image, &gauss_image);
+    f_write("screenshots/plgauss.ppm", &gauss_image);
 
+    /*
     // Use Sobel operator on image
     struct pixel** sobel_plate = sobel(gauss_plate, h, w);
     if(!sobel_plate) {

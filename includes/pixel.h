@@ -57,8 +57,8 @@ grayscale_filter(struct t_image* image);
  * of the picture will not be modified. Returns a new struct pixel** which
  * is the gaussian blurred version of the image received as parameter.
  */
-struct pixel**
-gaussian_blur_3(struct pixel** plate, const int h, const int w);
+void
+gaussian_blur3_filter(struct t_image* im_src, struct t_image* im_dst);
 
 /**
  * Applies the sobel operator to an image. Outer edge pixels are ignored.

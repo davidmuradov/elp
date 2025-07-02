@@ -87,36 +87,39 @@ grayscale_filter(struct t_image* image) {
     }
 }
 
-struct pixel**
-gaussian_blur_3(struct pixel** plate, const int h, const int w) {
+void
+gaussian_blur3_filter(struct t_image* im_src, struct t_image* im_dst) {
+    im_dst->h = im_src->h;
+    im_dst->w = im_src->w;
+
     // Gaussian integer convolution kernel
     const int GB_3_INT_KER[3][3] = {{1,2,1}, {2,4,2}, {1,2,1}};
 
     // Create new image
-    struct pixel** new_plate = new_px_array(h, w);
-    if(!new_plate)
-	return NULL;
+    struct pixel** im_dst_im = new_px_array(im_dst->h, im_dst->w);
+    if(!im_dst_im)
+	return;
+
+    im_dst->im = im_dst_im;
 
     // Copy the border pixels
-    for (int i = 0; i < h; i++) {
-	new_plate[i][0] = plate[i][0];
-	new_plate[i][w - 1] = plate[i][w - 1];
+    for (int i = 0; i < im_dst->h; i++) {
+	im_dst->im[i][0] = im_src->im[i][0];
+	im_dst->im[i][im_dst->w - 1] = im_src->im[i][im_dst->w - 1];
     }
-    for (int j = 1; j < w - 1; j++) {
-	new_plate[0][j] = plate[0][j];
-	new_plate[h - 1][j] = plate[h - 1][j];
+    for (int j = 1; j < im_dst->w - 1; j++) {
+	im_dst->im[0][j] = im_src->im[0][j];
+	im_dst->im[im_dst->h - 1][j] = im_src->im[im_dst->h - 1][j];
     }
 
     // Calculate all convoluted pixels, store in new_plate
     uint8_t conv_px = 0;
-    for (int i = 1; i < h - 1; i++) {
-	for (int j = 1; j < w - 1; j++) {
-	    conv_px = (uint8_t) compute_gen_conv_px(plate, i, j, GB_3_INT_KER, GB3_FACTOR);
-	    new_plate[i][j].r = new_plate[i][j].g = new_plate[i][j].b = conv_px;
+    for (int i = 1; i < im_dst->h - 1; i++) {
+	for (int j = 1; j < im_dst->w - 1; j++) {
+	    conv_px = (uint8_t) compute_gen_conv_px(im_src->im, i, j, GB_3_INT_KER, GB3_FACTOR);
+	    im_dst->im[i][j].r = im_dst->im[i][j].g = im_dst->im[i][j].b = conv_px;
 	}
     }
-
-    return new_plate;
 }
 
 struct pixel**
