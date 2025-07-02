@@ -2,16 +2,13 @@
 #include "pixel.h"
 
 char*
-extract_plate(struct pixel** plate, int h, int w) {
+extract_plate(struct t_image* image) {
 
     // Turn image to grayscale version
-    for (int i = 0; i < h; i++) {
-	for (int j = 0; j < w; j++) {
-	    grayscale_px(&(plate[i][j]));
-	}
-    }
-    f_write("screenshots/plgray.ppm", plate, h, w);
+    grayscale_filter(image);
+    f_write("screenshots/plgray.ppm", image);
 
+    /*
     // Use gaussian blur on image
     struct pixel** gauss_plate = gaussian_blur_3(plate, h, w);
     if(!gauss_plate) {
@@ -83,6 +80,7 @@ extract_plate(struct pixel** plate, int h, int w) {
     free_px_array(d_plate, h);
     free_px_array(e_plate, h);
     free_px_array(iso_plate, h);
+    */
 
     return "returned";
 }

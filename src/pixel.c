@@ -74,9 +74,17 @@ free_px_array(struct pixel** px_arr, const int h) {
 }
 
 void
-grayscale_px(struct pixel* px) {
-    double y = GSCALE_R_COEFF * px->r + GSCALE_G_COEFF * px->g + GSCALE_B_COEFF * px->b;
-    px->r = px->g = px->b = (uint8_t) round(y);
+grayscale_filter(struct t_image* image) {
+    double y_lin;
+
+    for(int i = 0; i < image->h; i++) {
+	for (int j = 0; j < image->w; j++) {
+	    y_lin = GSCALE_R_COEFF * image->im[i][j].r
+		+ GSCALE_G_COEFF * image->im[i][j].g
+		+ GSCALE_B_COEFF * image->im[i][j].b;
+	    image->im[i][j].r = image->im[i][j].g = image->im[i][j].b = (uint8_t) round(y_lin);
+	}
+    }
 }
 
 struct pixel**

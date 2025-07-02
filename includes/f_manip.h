@@ -21,8 +21,8 @@ void f_read(char* pathname, struct t_image* image);
 
 /** \fn int f_write(char* pathname, const int height, const int width)
  *
- * Write a struct pixel** 2D array into a P6 formatted .ppm file.
+ * Write a struct t_image* into a P6 formatted .ppm file.
  * Return 1 on success, 0 otherwise.
  */
-int f_write(char* pathname, struct pixel** arr, const int height, const int width);
+int f_write(char* pathname, struct t_image* image);
 #endif

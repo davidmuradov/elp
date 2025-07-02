@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     struct t_image plate;
     f_read(argv[optind], &plate);
 
-    //extract_plate(v1_plate, v1_plate_h, v1_plate_w);
+    char* p_number = extract_plate(&plate);
 
     return EXIT_SUCCESS;
 }

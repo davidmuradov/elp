@@ -65,7 +65,7 @@ void f_read(char* pathname, struct t_image* image) {
     image->im = v1_plate;
 }
 
-int f_write(char* pathname, struct pixel** arr, const int height, const int width) {
+int f_write(char* pathname, struct t_image* image) {
     FILE* f = fopen(pathname, "wb");
     if (!f) {
 	perror("Failed to open file for writing: %s");
@@ -73,12 +73,12 @@ int f_write(char* pathname, struct pixel** arr, const int height, const int widt
     }
 
     // Write the PPM header
-    fprintf(f, "P6\n%d %d\n255\n", width, height);
+    fprintf(f, "P6\n%d %d\n255\n", image->w, image->h);
 
     // Write the binary pixel data
-    for (int i = 0; i < height; ++i) {
-	for (int j = 0; j < width; ++j) {
-	    fwrite(&arr[i][j], sizeof(struct pixel), 1, f);
+    for (int i = 0; i < image->h; i++) {
+	for (int j = 0; j < image->w; j++) {
+	    fwrite(&(image->im[i][j]), sizeof(struct pixel), 1, f);
 	}
     }
 

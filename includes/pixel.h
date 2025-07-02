@@ -46,11 +46,11 @@ void
 free_px_array(struct pixel** px_arr, const int h);
 
 /**
- * Convert a pixel to a grayscale version. The grayscaled pixel is obtained
+ * Convert an image to a grayscale version. The grayscaled image is obtained
  * using grayscale coefficients.
  */
 void
-grayscale_px(struct pixel* px);
+grayscale_filter(struct t_image* image);
 
 /**
  * Applies a 3x3 gaussian blur to an image. In this version, the outer edge
