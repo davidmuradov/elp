@@ -45,3 +45,4 @@ number. For this project, a library will not be used for OCR as this step is
 part of the learning process.
 
 -- Small test
+-- Small test 2
