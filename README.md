@@ -47,4 +47,8 @@ part of the learning process.
 looks, it would make sense to start working on functions that would detect a plate
 in a normal image and send the result to the rest of the program.
 
+- Perhaps implement the Canny edge detector to obtain plate contours.
+
 - Lots of optimizations in image processing.
+
+- Keep note that multithreading can be used to optimize image processing.

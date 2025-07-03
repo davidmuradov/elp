@@ -18,6 +18,7 @@ extract_plate(struct t_image* image) {
     sobel_filter(&gauss_image, &sobel_image);
     f_write("screenshots/plsobel.ppm", &sobel_image);
 
+    /*
     // Use simple thresholding
     struct t_image t_image;
     threshold(&gauss_image, &t_image);
@@ -39,7 +40,6 @@ extract_plate(struct t_image* image) {
     isolate_number(&eroded_image, &isolated_image);
     f_write("screenshots/plisolate.ppm", &isolated_image);
 
-    /*
     free_px_array(plate, h);
     free_px_array(gauss_plate, h);
     free_px_array(sobel_plate, h);
