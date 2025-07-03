@@ -88,8 +88,8 @@ dilation_morphological(struct t_image* im_src, struct t_image* im_dst);
  * erode dark pixels based on the size of the structuring element
  * (the erosion kernel). Returns an eroded image.
  */
-struct pixel**
-morph_erosion(struct pixel** plate, const int h, const int w);
+void
+erosion_morphological(struct t_image* im_src, struct t_image* im_dst);
 
 /**
  * Isolates the plate number for Optical Character Recognition (OCR). This is
