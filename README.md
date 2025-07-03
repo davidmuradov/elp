@@ -36,13 +36,15 @@ which we can do image manipulation and processing.
 
 Next steps :
 
-- Code needs to be refactored a bit in order to facilitate progress and to
-avoid memory allocation bugs.
+- Code needs to be refactored a bit more.
 
 - At this point, the output image is processed well enough to be reliably used
 in a OCR library (like tesseract for example) in order to extract the plate
 number. For this project, a library will not be used for OCR as this step is
 part of the learning process.
 
--- Small test
--- Small test 2
+- As of now, the program depends heavily on how the isolated plate image
+looks, it would make sense to start working on functions that would detect a plate
+in a normal image and send the result to the rest of the program.
+
+- Lots of optimizations in image processing.
