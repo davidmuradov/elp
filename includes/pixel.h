@@ -72,8 +72,8 @@ sobel_filter(struct t_image* im_src, struct t_image* im_dst);
  * Applies a constant threshold for binerization. Dark colors turn pure black
  * and light colors turn pure white.
  */
-struct pixel**
-threshold(struct pixel** plate, const int h, const int w);
+void
+threshold(struct t_image* im_src, struct t_image* im_dst);
 
 /**
  * Applies morphological dilation on a binary image. The function attempts to

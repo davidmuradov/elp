@@ -18,17 +18,12 @@ extract_plate(struct t_image* image) {
     sobel_filter(&gauss_image, &sobel_image);
     f_write("screenshots/plsobel.ppm", &sobel_image);
 
-    /*
     // Use simple thresholding
-    struct pixel** t_plate = threshold(gauss_plate, h, w);
-    if(!t_plate) {
-	free_px_array(plate, h);
-	free_px_array(gauss_plate, h);
-	free_px_array(sobel_plate, h);
-	exit(EXIT_FAILURE);
-    }
-    f_write("screenshots/plthreshold.ppm", t_plate, h, w);
+    struct t_image t_image;
+    threshold(&gauss_image, &t_image);
+    f_write("screenshots/plthreshold.ppm", &t_image);
 
+    /*
     // Use dilation
     struct pixel** d_plate = morph_dilation(t_plate, h, w);
     if(!d_plate) {

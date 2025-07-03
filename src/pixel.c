@@ -162,22 +162,25 @@ sobel_filter(struct t_image* im_src, struct t_image* im_dst) {
     }
 }
 
-struct pixel**
-threshold(struct pixel** plate, const int h, const int w) {
+void
+threshold(struct t_image* im_src, struct t_image* im_dst) {
+    im_dst->h = im_src->h;
+    im_dst->w = im_src->w;
+
     // Create new image
-    struct pixel** new_plate = new_px_array(h, w);
-    if(!new_plate)
-	return NULL;
+    struct pixel** im_dst_im = new_px_array(im_dst->h, im_dst->w);
+    if(!im_dst_im)
+	return;
+
+    im_dst->im = im_dst_im;
 
     // Simple thresholding
-    for (int i = 0; i < h; i++) {
-	for (int j = 0; j < w; j++) {
-	    new_plate[i][j].r = new_plate[i][j].g = new_plate[i][j].b
-		= (plate[i][j].r < THRESH_S) ? (0x00):(0xFF);
+    for (int i = 0; i < im_src->h; i++) {
+	for (int j = 0; j < im_src->w; j++) {
+	    im_dst->im[i][j].r = im_dst->im[i][j].g = im_dst->im[i][j].b
+		= (im_src->im[i][j].r < THRESH_S) ? (0x00):(0xFF);
 	}
     }
-
-    return new_plate;
 }
 
 struct pixel**
