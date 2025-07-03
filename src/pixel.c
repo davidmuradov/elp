@@ -253,8 +253,8 @@ erosion_morphological(struct t_image* im_src, struct t_image* im_dst) {
     }
 }
 
-struct pixel**
-isolate_number(struct pixel** plate, int* h, int* w) {
+void
+isolate_number(struct t_image* im_src, struct t_image* im_dst) {
 
     int tbp; // Total black pixels on x axis per line
     int px_buf = 5; // 5 pixels of buffer
@@ -267,19 +267,19 @@ isolate_number(struct pixel** plate, int* h, int* w) {
     int min_w = 0;
     int max_w = 0;
 
-    for (int i = 0; i < *h; i++) {
+    for (int i = 0; i < im_src->h; i++) {
 	tbp = 0;
-	for (int j = 0; j < *w; j++) {
-	    if(!plate[i][j].r)
+	for (int j = 0; j < im_src->w; j++) {
+	    if(!im_src->im[i][j].r)
 		tbp++;
 	}
 
-	h_rat = ((double) i) / *h;
-	w_rat = ((double) tbp) / *w;
+	h_rat = ((double) i) / im_src->h;
+	w_rat = ((double) tbp) / im_src->w;
 	// 0.3221 for letters ratio, 0.22135 for height ratio
 	if(w_rat > 0.3211 && (h_rat > 0.22135 && h_rat < 0.2864)) {
 	    min_h = i - px_buf;
-	    i = (int) (0.664 * *h);
+	    i = (int) (0.664 * im_src->h);
 	}
 	// 0.035248 for letters ratio, 0.359 for height ratio
 	else if(w_rat < 0.035248 && h_rat > 0.359) {
@@ -290,33 +290,39 @@ isolate_number(struct pixel** plate, int* h, int* w) {
 
     // Create new image
     int new_h = max_h - min_h + 1;
-    struct pixel** new_plate = new_px_array(new_h, *w);
-    *h = new_h;
-    if(!new_plate)
-	return NULL;
+
+    struct t_image im_inter;
+    im_inter.h = new_h;
+    im_inter.w = im_src->w;
+
+    struct pixel** im_dst_im_inter = new_px_array(new_h, im_src->w);
+    if(!im_dst_im_inter)
+	return;
+
+    im_inter.im = im_dst_im_inter;
 
     // Copy the pixels
     for (int i = min_h; i < max_h + 1; i++) {
-	for (int j = 0; j < *w; j++) {
-	    new_plate[i - min_h][j] = plate[i][j];
+	for (int j = 0; j < im_src->w; j++) {
+	    im_inter.im[i - min_h][j] = im_src->im[i][j];
 	}
     }
 
     // Using the new image to isolate the plate horizontally
     double v_rat = 0;
     double d_rat = 0;
-    for (int j = 0; j < *w; j++) {
+    for (int j = 0; j < im_src->w; j++) {
 	tbp = 0;
-	for (int i = 0; i < *h; i++) {
-	    if(!new_plate[i][j].r)
+	for (int i = 0; i < im_inter.h; i++) {
+	    if(!im_inter.im[i][j].r)
 		tbp++;
 	}
 
-	v_rat = ((double) tbp) / *h;
-	d_rat = ((double) j) / *w;
+	v_rat = ((double) tbp) / im_inter.h;
+	d_rat = ((double) j) / im_src->w;
 	if(v_rat > 0.03 && (d_rat > 0.03911 && d_rat < 0.13038)) {
 	    min_w = j - px_buf;
-	    j = (int) (0.855 * *w);
+	    j = (int) (0.855 * im_src->w);
 	}
 	// 0.035248 for letters ratio, 0.359 for height ratio
 	else if(v_rat < 0.03 && d_rat > 0.88657) {
@@ -327,22 +333,27 @@ isolate_number(struct pixel** plate, int* h, int* w) {
 
     // Create new image
     int new_w = max_w - min_w + 1;
-    struct pixel** newest_plate = new_px_array(*h, new_w);
-    *w = new_w;
-    if(!new_plate)
-	return NULL;
+
+    im_dst->h = im_inter.h;
+    im_dst->w = new_w;
+    struct pixel** im_dst_im = new_px_array(im_inter.h, new_w);
+
+    if(!im_dst_im)
+	return;
+
+    im_dst->im = im_dst_im;
 
     // Copy the pixels
     for (int j = min_w; j < max_w + 1; j++) {
-	for (int i = 0; i < *h; i++) {
-	    newest_plate[i][j - min_w] = new_plate[i][j];
+	for (int i = 0; i < im_inter.h; i++) {
+	    im_dst->im[i][j - min_w] = im_inter.im[i][j];
 	}
     }
 
     // Free inter. plate
-    free_px_array(new_plate, *h);
+    free_px_array(im_inter.im, im_inter.h);
 
-    return newest_plate;
+    // i hate this function
 }
 
 static inline int

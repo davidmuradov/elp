@@ -33,21 +33,13 @@ extract_plate(struct t_image* image) {
     erosion_morphological(&dilated_image, &eroded_image);
     f_write("screenshots/plerode.ppm", &eroded_image);
 
-    /*
     // At this point, plate is morphologicaly closed
     // Isolate the plate vertically and horizontally (very basic version)
-    struct pixel** iso_plate = isolate_number(e_plate, &h, &w);
-    if(!iso_plate) {
-	free_px_array(plate, h);
-	free_px_array(gauss_plate, h);
-	free_px_array(sobel_plate, h);
-	free_px_array(t_plate, h);
-	free_px_array(d_plate, h);
-	free_px_array(e_plate, h);
-	exit(EXIT_FAILURE);
-    }
-    f_write("screenshots/plisolate.ppm", iso_plate, h, w);
+    struct t_image isolated_image;
+    isolate_number(&eroded_image, &isolated_image);
+    f_write("screenshots/plisolate.ppm", &isolated_image);
 
+    /*
     free_px_array(plate, h);
     free_px_array(gauss_plate, h);
     free_px_array(sobel_plate, h);

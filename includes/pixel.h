@@ -96,7 +96,7 @@ erosion_morphological(struct t_image* im_src, struct t_image* im_dst);
  * a very basic implementation, will probably need to be updated in the future
  * for reliability. Returns a struct pixel** containing the isolated number.
  */
-struct pixel**
-isolate_number(struct pixel** plate, int* h, int* w);
+void
+isolate_number(struct t_image* im_src, struct t_image* im_dst);
 
 #endif
