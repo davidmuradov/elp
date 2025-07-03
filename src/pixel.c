@@ -122,41 +122,44 @@ gaussian_blur3_filter(struct t_image* im_src, struct t_image* im_dst) {
     }
 }
 
-struct pixel**
-sobel(struct pixel** plate, const int h, const int w) {
+void
+sobel_filter(struct t_image* im_src, struct t_image* im_dst) {
+    im_dst->h = im_src->h;
+    im_dst->w = im_src->w;
+
     // Sobel convolution kernels
     const int SOBEL_GX[3][3] = {{-1,0,1}, {-2,0,2}, {-1,0,1}};
     const int SOBEL_GY[3][3] = {{-1,-2,-1}, {0,0,0}, {1,2,1}};
 
     // Create new image
-    struct pixel** new_plate = new_px_array(h, w);
-    if(!new_plate)
-	return NULL;
+    struct pixel** im_dst_im = new_px_array(im_dst->h, im_dst->w);
+    if(!im_dst_im)
+	return;
+
+    im_dst->im = im_dst_im;
 
     // Copy the border pixels
-    for (int i = 0; i < h; i++) {
-	new_plate[i][0] = plate[i][0];
-	new_plate[i][w - 1] = plate[i][w - 1];
+    for (int i = 0; i < im_dst->h; i++) {
+	im_dst->im[i][0] = im_src->im[i][0];
+	im_dst->im[i][im_dst->w - 1] = im_src->im[i][im_dst->w - 1];
     }
-    for (int j = 1; j < w - 1; j++) {
-	new_plate[0][j] = plate[0][j];
-	new_plate[h - 1][j] = plate[h - 1][j];
+    for (int j = 1; j < im_dst->w - 1; j++) {
+	im_dst->im[0][j] = im_src->im[0][j];
+	im_dst->im[im_dst->h - 1][j] = im_src->im[im_dst->h - 1][j];
     }
 
     // Calculate all convoluted pixels, calculate magnitude, store in new_plate
     int px_gx = 0;
     int px_gy = 0;
     uint8_t conv_px = 0;
-    for (int i = 1; i < h - 1; i++) {
-	for (int j = 1; j < w - 1; j++) {
-	    px_gx = compute_gen_conv_px(plate, i, j, SOBEL_GX, SOBEL_FACTOR);
-	    px_gy = compute_gen_conv_px(plate, i, j, SOBEL_GY, SOBEL_FACTOR);
+    for (int i = 1; i < im_dst->h - 1; i++) {
+	for (int j = 1; j < im_dst->w - 1; j++) {
+	    px_gx = compute_gen_conv_px(im_src->im, i, j, SOBEL_GX, SOBEL_FACTOR);
+	    px_gy = compute_gen_conv_px(im_src->im, i, j, SOBEL_GY, SOBEL_FACTOR);
 	    conv_px = (uint8_t) sqrt(px_gx * px_gx + px_gy * px_gy);
-	    new_plate[i][j].r = new_plate[i][j].g = new_plate[i][j].b = conv_px;
+	    im_dst->im[i][j].r = im_dst->im[i][j].g = im_dst->im[i][j].b = conv_px;
 	}
     }
-
-    return new_plate;
 }
 
 struct pixel**

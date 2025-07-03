@@ -13,16 +13,12 @@ extract_plate(struct t_image* image) {
     gaussian_blur3_filter(image, &gauss_image);
     f_write("screenshots/plgauss.ppm", &gauss_image);
 
-    /*
     // Use Sobel operator on image
-    struct pixel** sobel_plate = sobel(gauss_plate, h, w);
-    if(!sobel_plate) {
-	free_px_array(plate, h);
-	free_px_array(gauss_plate, h);
-	exit(EXIT_FAILURE);
-    }
-    f_write("screenshots/plsobel.ppm", sobel_plate, h, w);
+    struct t_image sobel_image;
+    sobel_filter(&gauss_image, &sobel_image);
+    f_write("screenshots/plsobel.ppm", &sobel_image);
 
+    /*
     // Use simple thresholding
     struct pixel** t_plate = threshold(gauss_plate, h, w);
     if(!t_plate) {

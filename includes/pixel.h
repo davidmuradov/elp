@@ -65,8 +65,8 @@ gaussian_blur3_filter(struct t_image* im_src, struct t_image* im_dst);
  * Returns a new struct pixel** which is the sobel variant of the image received
  * as parameter
  */
-struct pixel**
-sobel(struct pixel** plate, const int h, const int w);
+void
+sobel_filter(struct t_image* im_src, struct t_image* im_dst);
 
 /**
  * Applies a constant threshold for binerization. Dark colors turn pure black
