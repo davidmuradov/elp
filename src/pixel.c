@@ -263,9 +263,9 @@ isolate_number(struct t_image* im_src, struct t_image* im_dst) {
     
     // Dimensions for the new plate
     int min_h = 0;
-    int max_h = 0;
+    int max_h = im_src->h;
     int min_w = 0;
-    int max_w = 0;
+    int max_w = im_src->w;
 
     for (int i = 0; i < im_src->h; i++) {
 	tbp = 0;
