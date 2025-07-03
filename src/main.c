@@ -3,6 +3,8 @@
 #include <stdio.h>
 
 #include "../includes/extract.h"
+#include "f_manip.h"
+#include "pixel.h"
 
 #define OPTIONS_LIST	"h?"
 
@@ -26,16 +28,11 @@ int main(int argc, char *argv[]) {
 	}
     }
 
-    int v1_plate_h = 0; // Number of pixels of height of image to analyze
-    int v1_plate_w = 0; // Number of pixels of width of image to analyze
+    // Read image, write to t_image structure
+    struct t_image plate;
+    f_read(argv[optind], &plate);
 
-    // Convert initial picture to 2d array of struct pixel
-    struct pixel** v1_plate = f_read(argv[optind], &v1_plate_h, &v1_plate_w);
-    if(!v1_plate) {
-	exit(EXIT_FAILURE);
-    }
-
-    extract_plate(v1_plate, v1_plate_h, v1_plate_w);
+    char* p_number = extract_plate(&plate);
 
     return EXIT_SUCCESS;
 }

@@ -26,6 +26,12 @@ struct pixel {
     uint8_t b;
 };
 
+struct t_image {
+    int h;
+    int w;
+    struct pixel** im;
+};
+
 /**
  * Create a new 2D array of pixels. The color values are random, so this array
  * should be initialized later in the program.
@@ -40,57 +46,57 @@ void
 free_px_array(struct pixel** px_arr, const int h);
 
 /**
- * Convert a pixel to a grayscale version. The grayscaled pixel is obtained
+ * Convert an image to a grayscale version. The grayscaled image is obtained
  * using grayscale coefficients.
  */
 void
-grayscale_px(struct pixel* px);
+grayscale_filter(struct t_image* image);
 
 /**
  * Applies a 3x3 gaussian blur to an image. In this version, the outer edge
  * of the picture will not be modified. Returns a new struct pixel** which
  * is the gaussian blurred version of the image received as parameter.
  */
-struct pixel**
-gaussian_blur_3(struct pixel** plate, const int h, const int w);
+void
+gaussian_blur3_filter(struct t_image* im_src, struct t_image* im_dst);
 
 /**
  * Applies the sobel operator to an image. Outer edge pixels are ignored.
  * Returns a new struct pixel** which is the sobel variant of the image received
  * as parameter
  */
-struct pixel**
-sobel(struct pixel** plate, const int h, const int w);
+void
+sobel_filter(struct t_image* im_src, struct t_image* im_dst);
 
 /**
  * Applies a constant threshold for binerization. Dark colors turn pure black
  * and light colors turn pure white.
  */
-struct pixel**
-threshold(struct pixel** plate, const int h, const int w);
+void
+threshold(struct t_image* im_src, struct t_image* im_dst);
 
 /**
  * Applies morphological dilation on a binary image. The function attempts to
  * dilate dark pixels based on the size of the structuring element
  * (the dilation kernel). Returns a dilated image.
  */
-struct pixel**
-morph_dilation(struct pixel** plate, const int h, const int w);
+void
+dilation_morphological(struct t_image* im_src, struct t_image* im_dst);
 
 /**
  * Applies morphological erosion on a binary image. The function attempts to
  * erode dark pixels based on the size of the structuring element
  * (the erosion kernel). Returns an eroded image.
  */
-struct pixel**
-morph_erosion(struct pixel** plate, const int h, const int w);
+void
+erosion_morphological(struct t_image* im_src, struct t_image* im_dst);
 
 /**
  * Isolates the plate number for Optical Character Recognition (OCR). This is
  * a very basic implementation, will probably need to be updated in the future
  * for reliability. Returns a struct pixel** containing the isolated number.
  */
-struct pixel**
-isolate_number(struct pixel** plate, int* h, int* w);
+void
+isolate_number(struct t_image* im_src, struct t_image* im_dst);
 
 #endif

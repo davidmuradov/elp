@@ -2,80 +2,44 @@
 #include "pixel.h"
 
 char*
-extract_plate(struct pixel** plate, int h, int w) {
+extract_plate(struct t_image* image) {
 
     // Turn image to grayscale version
-    for (int i = 0; i < h; i++) {
-	for (int j = 0; j < w; j++) {
-	    grayscale_px(&(plate[i][j]));
-	}
-    }
-    f_write("screenshots/plgray.ppm", plate, h, w);
+    grayscale_filter(image);
+    f_write("screenshots/plgray.ppm", image);
 
     // Use gaussian blur on image
-    struct pixel** gauss_plate = gaussian_blur_3(plate, h, w);
-    if(!gauss_plate) {
-	free_px_array(plate, h);
-	exit(EXIT_FAILURE);
-    }
-    f_write("screenshots/plgauss.ppm", gauss_plate, h, w);
+    struct t_image gauss_image;
+    gaussian_blur3_filter(image, &gauss_image);
+    f_write("screenshots/plgauss.ppm", &gauss_image);
 
     // Use Sobel operator on image
-    struct pixel** sobel_plate = sobel(gauss_plate, h, w);
-    if(!sobel_plate) {
-	free_px_array(plate, h);
-	free_px_array(gauss_plate, h);
-	exit(EXIT_FAILURE);
-    }
-    f_write("screenshots/plsobel.ppm", sobel_plate, h, w);
+    struct t_image sobel_image;
+    sobel_filter(&gauss_image, &sobel_image);
+    f_write("screenshots/plsobel.ppm", &sobel_image);
 
     // Use simple thresholding
-    struct pixel** t_plate = threshold(gauss_plate, h, w);
-    if(!t_plate) {
-	free_px_array(plate, h);
-	free_px_array(gauss_plate, h);
-	free_px_array(sobel_plate, h);
-	exit(EXIT_FAILURE);
-    }
-    f_write("screenshots/plthreshold.ppm", t_plate, h, w);
+    struct t_image t_image;
+    threshold(&gauss_image, &t_image);
+    f_write("screenshots/plthreshold.ppm", &t_image);
 
     // Use dilation
-    struct pixel** d_plate = morph_dilation(t_plate, h, w);
-    if(!d_plate) {
-	free_px_array(plate, h);
-	free_px_array(gauss_plate, h);
-	free_px_array(sobel_plate, h);
-	free_px_array(t_plate, h);
-	exit(EXIT_FAILURE);
-    }
-    f_write("screenshots/pldilate.ppm", d_plate, h, w);
+    struct t_image dilated_image;
+    dilation_morphological(&t_image, &dilated_image);
+    f_write("screenshots/pldilate.ppm", &dilated_image);
 
     // Use erosion
-    struct pixel** e_plate = morph_erosion(d_plate, h, w);
-    if(!e_plate) {
-	free_px_array(plate, h);
-	free_px_array(gauss_plate, h);
-	free_px_array(sobel_plate, h);
-	free_px_array(t_plate, h);
-	free_px_array(d_plate, h);
-	exit(EXIT_FAILURE);
-    }
-    f_write("screenshots/plerode.ppm", e_plate, h, w);
+    struct t_image eroded_image;
+    erosion_morphological(&dilated_image, &eroded_image);
+    f_write("screenshots/plerode.ppm", &eroded_image);
 
     // At this point, plate is morphologicaly closed
     // Isolate the plate vertically and horizontally (very basic version)
-    struct pixel** iso_plate = isolate_number(e_plate, &h, &w);
-    if(!iso_plate) {
-	free_px_array(plate, h);
-	free_px_array(gauss_plate, h);
-	free_px_array(sobel_plate, h);
-	free_px_array(t_plate, h);
-	free_px_array(d_plate, h);
-	free_px_array(e_plate, h);
-	exit(EXIT_FAILURE);
-    }
-    f_write("screenshots/plisolate.ppm", iso_plate, h, w);
+    struct t_image isolated_image;
+    isolate_number(&eroded_image, &isolated_image);
+    f_write("screenshots/plisolate.ppm", &isolated_image);
 
+    /*
     free_px_array(plate, h);
     free_px_array(gauss_plate, h);
     free_px_array(sobel_plate, h);
@@ -83,6 +47,7 @@ extract_plate(struct pixel** plate, int h, int w) {
     free_px_array(d_plate, h);
     free_px_array(e_plate, h);
     free_px_array(iso_plate, h);
+    */
 
     return "returned";
 }
