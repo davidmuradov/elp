@@ -23,18 +23,12 @@ extract_plate(struct t_image* image) {
     threshold(&gauss_image, &t_image);
     f_write("screenshots/plthreshold.ppm", &t_image);
 
-    /*
     // Use dilation
-    struct pixel** d_plate = morph_dilation(t_plate, h, w);
-    if(!d_plate) {
-	free_px_array(plate, h);
-	free_px_array(gauss_plate, h);
-	free_px_array(sobel_plate, h);
-	free_px_array(t_plate, h);
-	exit(EXIT_FAILURE);
-    }
-    f_write("screenshots/pldilate.ppm", d_plate, h, w);
+    struct t_image dilated_image;
+    dilation_morphological(&t_image, &dilated_image);
+    f_write("screenshots/pldilate.ppm", &dilated_image);
 
+    /*
     // Use erosion
     struct pixel** e_plate = morph_erosion(d_plate, h, w);
     if(!e_plate) {

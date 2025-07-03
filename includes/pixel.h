@@ -80,8 +80,8 @@ threshold(struct t_image* im_src, struct t_image* im_dst);
  * dilate dark pixels based on the size of the structuring element
  * (the dilation kernel). Returns a dilated image.
  */
-struct pixel**
-morph_dilation(struct pixel** plate, const int h, const int w);
+void
+dilation_morphological(struct t_image* im_src, struct t_image* im_dst);
 
 /**
  * Applies morphological erosion on a binary image. The function attempts to
