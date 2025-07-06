@@ -24,5 +24,5 @@ void f_read(char* pathname, struct t_image* image);
  * Write a struct t_image* into a P6 formatted .ppm file.
  * Return 1 on success, 0 otherwise.
  */
-int f_write(char* pathname, struct t_image* image);
+int f_write(char* pathname, struct t_gsimage* image);
 #endif

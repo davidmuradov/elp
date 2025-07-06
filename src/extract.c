@@ -5,15 +5,20 @@ char*
 extract_plate(struct t_image* image) {
 
     // Turn image to grayscale version
-    grayscale_filter(image);
-    f_write("screenshots/plgray.ppm", image);
+    struct t_gsimage gsimage;
+    grayscale_filter(image, &gsimage);
+    f_write("screenshots/plgray.ppm", &gsimage);
+    free_px_array(image->im, image->h);
 
     // Use gaussian blur on image
-    struct t_image gauss_image;
-    gaussian_blur3_filter(image, &gauss_image);
-    /*
+    struct t_gsimage gauss_image;
+    gaussian_blur3_filter(&gsimage, &gauss_image);
     f_write("screenshots/plgauss.ppm", &gauss_image);
 
+    free_gspx_array(gsimage.im, gsimage.h);
+    free_gspx_array(gauss_image.im, gauss_image.h);
+
+    /*
     // Use Sobel operator on image
     struct t_image sobel_image;
     sobel_filter(&gauss_image, &sobel_image);

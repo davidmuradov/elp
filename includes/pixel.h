@@ -26,6 +26,18 @@ struct pixel {
     uint8_t b;
 };
 
+// Grayscale pixel format
+struct gspixel {
+    int gspx;
+};
+
+// Grayscale image format
+struct t_gsimage {
+    int h;
+    int w;
+    struct gspixel** im;
+};
+
 struct t_image {
     int h;
     int w;
@@ -40,17 +52,29 @@ struct pixel**
 new_px_array(const int h, const int w);
 
 /**
+ * Create new grayscale pixel array.
+ */
+struct gspixel**
+new_gspx_array(const int h, const int w);
+
+/**
  * Free memory for a 2D array of pixels (or a plate image)
  */
 void
 free_px_array(struct pixel** px_arr, const int h);
 
 /**
+ * Free memory for a 2D array of grayscale pixels
+ */
+void
+free_gspx_array(struct gspixel** px_arr, const int h);
+
+/**
  * Convert an image to a grayscale version. The grayscaled image is obtained
  * using grayscale coefficients.
  */
 void
-grayscale_filter(struct t_image* image);
+grayscale_filter(struct t_image* im_src, struct t_gsimage* im_dst);
 
 /**
  * Applies a 3x3 gaussian blur to an image. In this version, the outer edge
@@ -58,7 +82,7 @@ grayscale_filter(struct t_image* image);
  * is the gaussian blurred version of the image received as parameter.
  */
 void
-gaussian_blur3_filter(struct t_image* im_src, struct t_image* im_dst);
+gaussian_blur3_filter(struct t_gsimage* im_src, struct t_gsimage* im_dst);
 
 /**
  * Applies the sobel operator to an image. Outer edge pixels are ignored.
