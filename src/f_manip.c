@@ -65,7 +65,7 @@ void f_read(char* pathname, struct t_image* image) {
     image->im = v1_plate;
 }
 
-int f_write(char* pathname, struct t_image* image) {
+int f_write(char* pathname, struct t_gsimage* image) {
     FILE* f = fopen(pathname, "wb");
     if (!f) {
 	perror("Failed to open file for writing: %s");
@@ -78,7 +78,9 @@ int f_write(char* pathname, struct t_image* image) {
     // Write the binary pixel data
     for (int i = 0; i < image->h; i++) {
 	for (int j = 0; j < image->w; j++) {
-	    fwrite(&(image->im[i][j]), sizeof(struct pixel), 1, f);
+	    fwrite(&(image->im[i][j]), 1, 1, f);
+	    fwrite(&(image->im[i][j]), 1, 1, f);
+	    fwrite(&(image->im[i][j]), 1, 1, f);
 	}
     }
 
