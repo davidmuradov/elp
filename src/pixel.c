@@ -32,8 +32,7 @@ erodes(struct pixel** plate, const int i, const int j);
 
 struct pixel**
 new_px_array(const int h, const int w) {
-    struct pixel** arr = (struct pixel**)
-	malloc((unsigned long) h * sizeof(struct pixel*));
+    struct pixel** arr = malloc((unsigned long) h * sizeof(struct pixel*));
     if(!arr) {
 	fprintf(stderr, "Error while allocating memory for new pixel array\n");
 	return NULL;
@@ -41,8 +40,7 @@ new_px_array(const int h, const int w) {
 
     // Allocate for every line
     for (int i = 0; i < h; i++) {
-	arr[i] = (struct pixel*)
-	    malloc((unsigned long) w * sizeof(struct pixel));
+	arr[i] = malloc((unsigned long) w * sizeof(struct pixel));
 	if(!arr[i]) {
 	    fprintf(stderr, "Error while allocating memory for new pixel array\n");
 
@@ -92,10 +90,49 @@ gaussian_blur3_filter(struct t_image* im_src, struct t_image* im_dst) {
     im_dst->h = im_src->h;
     im_dst->w = im_src->w;
 
-    // Gaussian integer convolution kernel
-    const int GB_3_INT_KER[3][3] = {{1,2,1}, {2,4,2}, {1,2,1}};
+    // Gaussian integer separated convolution kernel
+    const int GB_3_INT_KER[3] = {1,2,1};
 
-    // Create new image
+    // Inter. array for padding
+    struct pixel** i_arr = new_px_array(im_src->h + 2, im_src->w + 2);
+
+    // Inter. array for first pass
+    struct pixel** pass1 = new_px_array(im_src->h, im_src->w + 2);
+
+    // Copy corners
+    i_arr[0][0] = im_src->im[0][0];
+    i_arr[0][im_src->w + 1] = im_src->im[0][im_src->w - 1];
+    i_arr[im_src->h + 1][0] = im_src->im[im_src->h - 1][0];
+    i_arr[im_src->h + 1][im_src->w + 1] = im_src->im[im_src->h - 1][im_src->w - 1];
+
+
+    // Upper-lower border copy
+    for (int j = 1; j < im_src->w + 1; j++) {
+	i_arr[0][j] = im_src->im[0][j - 1];
+	i_arr[im_src->h + 1][j] = im_src->im[im_src->h - 1][j - 1];
+    }
+
+    // Left-right border copy
+    for (int i = 1; i < im_src->h + 1; i++) {
+	i_arr[i][0] = im_src->im[i - 1][0];
+	i_arr[i][im_src->w + 1] = im_src->im[i - 1][im_src->w - 1];
+    }
+
+    // Copy rest of picture
+    for (int i = 1; i < im_src->h + 1; i++)
+	for (int j = 1; j < im_src->w + 1; j++)
+	    i_arr[i][j] = im_src->im[i - 1][j - 1];
+
+    // First pass
+    for (int i = 1; i < im_src->h + 1; i++) {
+	for (int j = 0; j < im_src->w + 2; j++) {
+	    pass1[i - 1][j].r = pass1[i - 1][j].g = pass1[i - 1][j].b
+		= i_arr[i - 1][j].r + 2 * i_arr[i][j].r + i_arr[i + 1][j].r;
+	}
+    }
+    
+    /*
+    // Create copy of image array
     struct pixel** im_dst_im = new_px_array(im_dst->h, im_dst->w);
     if(!im_dst_im)
 	return;
@@ -116,10 +153,11 @@ gaussian_blur3_filter(struct t_image* im_src, struct t_image* im_dst) {
     uint8_t conv_px = 0;
     for (int i = 1; i < im_dst->h - 1; i++) {
 	for (int j = 1; j < im_dst->w - 1; j++) {
-	    conv_px = (uint8_t) compute_gen_conv_px(im_src->im, i, j, GB_3_INT_KER, GB3_FACTOR);
-	    im_dst->im[i][j].r = im_dst->im[i][j].g = im_dst->im[i][j].b = conv_px;
+	    //conv_px = (uint8_t) compute_gen_conv_px(im_src->im, i, j, GB_3_INT_KER, GB3_FACTOR);
+	    //im_dst->im[i][j].r = im_dst->im[i][j].g = im_dst->im[i][j].b = conv_px;
 	}
     }
+    */
 }
 
 void

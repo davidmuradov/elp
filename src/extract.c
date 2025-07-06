@@ -11,6 +11,7 @@ extract_plate(struct t_image* image) {
     // Use gaussian blur on image
     struct t_image gauss_image;
     gaussian_blur3_filter(image, &gauss_image);
+    /*
     f_write("screenshots/plgauss.ppm", &gauss_image);
 
     // Use Sobel operator on image
@@ -18,7 +19,6 @@ extract_plate(struct t_image* image) {
     sobel_filter(&gauss_image, &sobel_image);
     f_write("screenshots/plsobel.ppm", &sobel_image);
 
-    /*
     // Use simple thresholding
     struct t_image t_image;
     threshold(&gauss_image, &t_image);
