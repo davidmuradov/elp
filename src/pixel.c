@@ -187,8 +187,8 @@ gaussian_blur3_filter(struct t_gsimage* im_src, struct t_gsimage* im_dst) {
     im_dst->im = im_dst_im;
 
     // Second pass
-    for (int i = 0; i < im_dst->h - 1; i++) {
-	for (int j = 0; j < im_dst->w - 1; j++) {
+    for (int i = 0; i < im_dst->h; i++) {
+	for (int j = 0; j < im_dst->w; j++) {
 	    im_dst->im[i][j].gspx = GB3_FACTOR * (p1[i][j].gspx + 2 * p1[i][j + 1].gspx + p1[i][j + 2].gspx);
 	}
     }
