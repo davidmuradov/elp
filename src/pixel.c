@@ -165,17 +165,29 @@ gaussian_blur3_filter(struct t_gsimage* im_src, struct t_gsimage* im_dst) {
 	i_arr[i][im_src->w + 1] = im_src->im[i - 1][im_src->w - 1];
     }
 
-    // Copy rest of picture
-    for (int i = 1; i < im_src->h + 1; i++)
-	for (int j = 1; j < im_src->w + 1; j++)
-	    i_arr[i][j] = im_src->im[i - 1][j - 1];
-
-    // First pass
+    // --- FIRST PASS --- //
+    // Vertical pass left-right border
     for (int i = 1; i < im_src->h + 1; i++) {
-	for (int j = 0; j < im_src->w + 2; j++) {
-	    p1[i - 1][j].gspx = i_arr[i - 1][j].gspx + 2 * i_arr[i][j].gspx + i_arr[i + 1][j].gspx;
+	p1[i - 1][0].gspx = i_arr[i - 1][0].gspx + 2 * i_arr[i][0].gspx + i_arr[i + 1][0].gspx;
+	p1[i - 1][im_src->w + 1].gspx = i_arr[i - 1][im_src->w + 1].gspx
+	    + 2 * i_arr[i][im_src->w + 1].gspx + i_arr[i + 1][im_src->w + 1].gspx;
+    }
+
+    // Pass upper-lower border
+    for (int j = 0; j < im_src->w; j++) {
+	p1[0][j + 1].gspx = i_arr[0][j + 1].gspx + 2 * im_src->im[0][j].gspx + im_src->im[1][j].gspx;
+	p1[im_src->h - 1][j + 1].gspx = im_src->im[im_src->h - 2][j].gspx
+	    + 2 * im_src->im[im_src->h - 1][j].gspx + i_arr[im_src->h + 1][j + 1].gspx;
+    }
+
+    // Pass middle of array
+    for (int i = 1; i < im_src->h - 1; i++) {
+	for (int j = 0; j < im_src->w; j++) {
+	    p1[i][j + 1].gspx = im_src->im[i - 1][j].gspx
+		+ 2 * im_src->im[i][j].gspx + im_src->im[i + 1][j].gspx;
 	}
     }
+    // --- END FIRST PASS --- //
 
     free_gspx_array(i_arr, im_src->h + 2);
     
