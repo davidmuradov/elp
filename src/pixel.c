@@ -60,6 +60,36 @@ new_px_array(const int h, const int w) {
     return arr;
 }
 
+struct gspixel**
+new_gspx_array(const int h, const int w) {
+    struct gspixel** arr = malloc((unsigned long) h * sizeof(struct gspixel*));
+    if(!arr) {
+	fprintf(stderr, "Error while allocating memory for new pixel array\n");
+	return NULL;
+    }
+
+    // Allocate for every line
+    for (int i = 0; i < h; i++) {
+	arr[i] = malloc((unsigned long) w * sizeof(struct gspixel));
+	if(!arr[i]) {
+	    fprintf(stderr, "Error while allocating memory for new pixel array\n");
+
+	    // Free every line before the failed allocation, free the parent
+	    // as well
+	    for (int j = i - 1; j > -1; j--) {
+		free(arr[j]);
+		arr[j] = NULL;
+	    }
+
+	    free(arr);
+
+	    return (arr = NULL);
+	}
+    }
+
+    return arr;
+}
+
 void
 free_px_array(struct pixel** px_arr, const int h) {
     for (int i = 0; i < h; i++) {
@@ -72,32 +102,49 @@ free_px_array(struct pixel** px_arr, const int h) {
 }
 
 void
-grayscale_filter(struct t_image* image) {
+free_gspx_array(struct gspixel** px_arr, const int h) {
+    for (int i = 0; i < h; i++) {
+	free(px_arr[i]);
+	px_arr[i] = NULL;
+    }
+
+    free(px_arr);
+    px_arr = NULL;
+}
+
+void
+grayscale_filter(struct t_image* im_src, struct t_gsimage* im_dst) {
+    im_dst->h = im_src->h;
+    im_dst->w = im_src->w;
+
+    struct gspixel** im_dst_im = new_gspx_array(im_dst->h, im_dst->w);
+    if(!im_dst_im)
+	return;
+
+    im_dst->im = im_dst_im;
+
     double y_lin;
 
-    for(int i = 0; i < image->h; i++) {
-	for (int j = 0; j < image->w; j++) {
-	    y_lin = GSCALE_R_COEFF * image->im[i][j].r
-		+ GSCALE_G_COEFF * image->im[i][j].g
-		+ GSCALE_B_COEFF * image->im[i][j].b;
-	    image->im[i][j].r = image->im[i][j].g = image->im[i][j].b = (uint8_t) round(y_lin);
+    for(int i = 0; i < im_src->h; i++) {
+	for (int j = 0; j < im_src->w; j++) {
+	    y_lin = GSCALE_R_COEFF * im_src->im[i][j].r
+		+ GSCALE_G_COEFF * im_src->im[i][j].g
+		+ GSCALE_B_COEFF * im_src->im[i][j].b;
+	    im_dst->im[i][j].gspx = im_dst->im[i][j].gspx = im_dst->im[i][j].gspx = (int) round(y_lin);
 	}
     }
 }
 
 void
-gaussian_blur3_filter(struct t_image* im_src, struct t_image* im_dst) {
+gaussian_blur3_filter(struct t_gsimage* im_src, struct t_gsimage* im_dst) {
     im_dst->h = im_src->h;
     im_dst->w = im_src->w;
 
-    // Gaussian integer separated convolution kernel
-    const int GB_3_INT_KER[3] = {1,2,1};
-
     // Inter. array for padding
-    struct pixel** i_arr = new_px_array(im_src->h + 2, im_src->w + 2);
+    struct gspixel** i_arr = new_gspx_array(im_src->h + 2, im_src->w + 2);
 
     // Inter. array for first pass
-    struct pixel** pass1 = new_px_array(im_src->h, im_src->w + 2);
+    struct gspixel** p1 = new_gspx_array(im_src->h, im_src->w + 2);
 
     // Copy corners
     i_arr[0][0] = im_src->im[0][0];
@@ -126,38 +173,27 @@ gaussian_blur3_filter(struct t_image* im_src, struct t_image* im_dst) {
     // First pass
     for (int i = 1; i < im_src->h + 1; i++) {
 	for (int j = 0; j < im_src->w + 2; j++) {
-	    pass1[i - 1][j].r = pass1[i - 1][j].g = pass1[i - 1][j].b
-		= i_arr[i - 1][j].r + 2 * i_arr[i][j].r + i_arr[i + 1][j].r;
+	    p1[i - 1][j].gspx = i_arr[i - 1][j].gspx + 2 * i_arr[i][j].gspx + i_arr[i + 1][j].gspx;
 	}
     }
+
+    free_gspx_array(i_arr, im_src->h + 2);
     
-    /*
     // Create copy of image array
-    struct pixel** im_dst_im = new_px_array(im_dst->h, im_dst->w);
+    struct gspixel** im_dst_im = new_gspx_array(im_dst->h, im_dst->w);
     if(!im_dst_im)
 	return;
 
     im_dst->im = im_dst_im;
 
-    // Copy the border pixels
-    for (int i = 0; i < im_dst->h; i++) {
-	im_dst->im[i][0] = im_src->im[i][0];
-	im_dst->im[i][im_dst->w - 1] = im_src->im[i][im_dst->w - 1];
-    }
-    for (int j = 1; j < im_dst->w - 1; j++) {
-	im_dst->im[0][j] = im_src->im[0][j];
-	im_dst->im[im_dst->h - 1][j] = im_src->im[im_dst->h - 1][j];
-    }
-
-    // Calculate all convoluted pixels, store in new_plate
-    uint8_t conv_px = 0;
-    for (int i = 1; i < im_dst->h - 1; i++) {
-	for (int j = 1; j < im_dst->w - 1; j++) {
-	    //conv_px = (uint8_t) compute_gen_conv_px(im_src->im, i, j, GB_3_INT_KER, GB3_FACTOR);
-	    //im_dst->im[i][j].r = im_dst->im[i][j].g = im_dst->im[i][j].b = conv_px;
+    // Second pass
+    for (int i = 0; i < im_dst->h - 1; i++) {
+	for (int j = 0; j < im_dst->w - 1; j++) {
+	    im_dst->im[i][j].gspx = GB3_FACTOR * (p1[i][j].gspx + 2 * p1[i][j + 1].gspx + p1[i][j + 2].gspx);
 	}
     }
-    */
+
+    free_gspx_array(p1, im_src->h);
 }
 
 void
